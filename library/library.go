@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"strings"
+	"time"
 )
 
 type Library struct {
@@ -18,6 +19,8 @@ func (lib *Library) MasterSearch(query string) map[string]string {
 	results := make(map[string]string)
 
 	playlists := []Playlist{PlaylistTV, PlaylistSeries, PlaylistMovies, PlayListRadio}
+
+	now := time.Now()
 
 	for _, playlist := range playlists {
 		playlistResult := lib.Search(playlist, query)
@@ -34,6 +37,10 @@ func (lib *Library) MasterSearch(query string) map[string]string {
 		}
 
 	}
+
+	done := time.Now()
+
+	fmt.Printf("🎬 %d matches found in %v\n", len(results), done.Sub(now))
 
 	return results
 }
