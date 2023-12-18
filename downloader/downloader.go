@@ -21,9 +21,10 @@ func Download(update bool) (string, error) {
 		fmt.Println("File not found. Downloading...")
 	}
 
+	protocol := os.Getenv("PROTOCOL")
 	server := os.Getenv("SERVER")
 
-	req, err := http.NewRequest("GET", path.Join(server, "get.php"), nil)
+	req, err := http.NewRequest("GET", fmt.Sprintf("%s://%s/get.php", protocol, server), nil)
 	if err != nil {
 		return "", err
 	}
@@ -43,21 +44,21 @@ func Download(update bool) (string, error) {
 
 	req.URL.RawQuery = urlParams.Encode()
 
-	fmt.Printf("URL: %s\n", req.URL.String())
+	fmt.Printf("Downloading %s\n", req.URL.String())
+
+	now := time.Now()
 
 	response, err := http.Get(req.URL.String())
 	if err != nil {
 		return "", err
 	}
 
-	fmt.Printf("Downloading %s\n", req.URL.String())
-
-	now := time.Now()
-
-	fmt.Println(response.StatusCode)
-
 	if response.StatusCode != 200 {
 		return "", fmt.Errorf("server returned %d", response.StatusCode)
+	}
+
+	if response.Header.Get("Content-Type") == "text/html" {
+		return "", fmt.Errorf("server returned an error: %s", response.Status)
 	}
 
 	defer response.Body.Close()
@@ -120,12 +121,17 @@ func GetDownloadedFilePath() (string, error) {
 }
 
 func getDownloadedFileName() (string, error) {
-	req, err := http.NewRequest("GET", os.Getenv("SERVER"), nil)
-	if err != nil {
-		return "", err
+	server := os.Getenv("SERVER")
+
+	output := os.Getenv("OUTPUT")
+
+	extension := os.Getenv("TYPE")
+
+	if server == "" || extension == "" {
+		return "", fmt.Errorf("server or extension is empty")
 	}
 
-	return req.URL.Host, nil
+	return fmt.Sprintf("%s.%s.%s", server, output, extension), nil
 }
 
 func isDownloadedFileExists() bool {
