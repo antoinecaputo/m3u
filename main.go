@@ -4,11 +4,14 @@ import (
 	"bufio"
 	"fmt"
 	"github.com/joho/godotenv"
+	"iptvstudio/cmd"
 	"iptvstudio/downloader"
 	"iptvstudio/parser"
+	"iptvstudio/player"
 	"log"
 	"os"
 	"os/exec"
+	"strconv"
 	"strings"
 )
 
@@ -43,10 +46,12 @@ func main() {
 		}
 	}
 
+	var reader *bufio.Reader
+
 	for {
 		reader = bufio.NewReader(os.Stdin)
 
-		fmt.Print("👀 What you want to watch? ")
+		fmt.Print("\n👀 What you want to watch? ")
 
 		query, err := reader.ReadString('\n')
 		if err != nil {
@@ -55,15 +60,63 @@ func main() {
 
 		query = strings.Trim(query, "\n")
 
-		result := lib.MasterSearch(query)
-
-		fmt.Printf("🍿 %d matches found\n", len(result))
-
-		for displayName, url := range result {
-			fmt.Printf("%s - %s\n", displayName, url)
+		if query == "" {
+			continue
 		}
 
-		fmt.Println("")
+		result := lib.MasterSearch(query)
+
+		fmt.Println()
+
+		if len(result) == 0 {
+			fmt.Println("😢 Nothing found")
+			continue
+		}
+
+		var indexedResult []string
+
+		for displayName, url := range result {
+			fmt.Printf("#%d : %s - %s\n", len(indexedResult), displayName, url)
+
+			indexedResult = append(indexedResult, displayName)
+		}
+
+		fmt.Print("\n🍿 Select a match or press enter to search again:\n")
+
+		fmt.Print("#")
+
+		reader = bufio.NewReader(os.Stdin)
+
+		selector, err := reader.ReadString('\n')
+		if err != nil {
+			log.Fatalln(err)
+		}
+
+		selector = strings.Trim(selector, "#")
+		selector = strings.Trim(selector, "\n")
+
+		if selector == "" {
+			continue
+		}
+
+		fmt.Print("\n")
+
+		selectorInt, err := strconv.Atoi(selector)
+		if err != nil {
+			fmt.Printf("%s is not a number\n", selector)
+			continue
+		}
+
+		if selectorInt >= len(indexedResult) {
+			fmt.Printf("%s is not a valid number [0-%d]\n", selector, len(indexedResult)-1)
+			continue
+		}
+
+		displayName := indexedResult[selectorInt]
+
+		fmt.Printf("🛋️  VLC startup with %s\n", result[displayName])
+
+		player.Play(result[displayName])
 	}
 
 	return
