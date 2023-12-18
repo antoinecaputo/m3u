@@ -32,6 +32,7 @@ func Download(update bool) (string, error) {
 		"username": os.Getenv("USERNAME"),
 		"password": os.Getenv("PASSWORD"),
 		"type":     os.Getenv("TYPE"),
+		"output":   os.Getenv("OUTPUT"),
 	}
 
 	urlParams := req.URL.Query()
