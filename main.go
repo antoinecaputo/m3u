@@ -18,25 +18,11 @@ func main() {
 		log.Fatalln(err)
 	}
 
-	fmt.Print("Do you want to update the library? (y/press enter to skip) ")
-
-	reader := bufio.NewReader(os.Stdin)
-
-	answer, err := reader.ReadString('\n')
-	if err != nil {
-		log.Fatalln(err)
-	}
-
-	answer = strings.Trim(answer, "\n")
-
-	update := false
-	if answer == "y" {
-		update = true
-	}
+	programArgs := cmd.ParseArgs()
 
 	// Downloader should be handled by the library loading
 	// And all the stuff above for asking if the user wants to update the library
-	_, err = downloader.Download(update)
+	_, err = downloader.Download(programArgs.Update)
 	if err != nil {
 		log.Fatalln(err)
 	}
@@ -50,7 +36,7 @@ func main() {
 
 	// Should probably be handled by the library too
 	// Save automatically when updating the library
-	if update {
+	if programArgs.Update {
 		err = lib.Save()
 		if err != nil {
 			log.Fatalln(err)
