@@ -2,10 +2,13 @@ package downloader
 
 import (
 	"fmt"
+	"github.com/schollz/progressbar/v3"
 	"io"
 	"net/http"
 	"os"
 	"path"
+	"strings"
+	"sync"
 	"time"
 )
 
@@ -145,4 +148,95 @@ func isDownloadedFileExists() bool {
 	}
 
 	return true
+}
+
+type DownloadQueue struct {
+	mutex        *sync.Mutex
+	files        map[string]bool
+	ProgressChan chan int64
+	DoneChan     chan bool
+}
+
+func InitDownloadQueue() *DownloadQueue {
+	d := &DownloadQueue{}
+
+	d.mutex = &sync.Mutex{}
+	d.files = make(map[string]bool)
+	d.ProgressChan = make(chan int64)
+	d.DoneChan = make(chan bool)
+
+	return d
+}
+
+func (d *DownloadQueue) DownloadedVideo(url string) {
+	d.mutex.Lock()
+
+	tokens := strings.Split(url, "/")
+	fileName := tokens[len(tokens)-1]
+
+	if d.files[fileName] {
+		d.mutex.Unlock()
+		fmt.Printf("File %s is already being downloaded\n", fileName)
+		d.DoneChan <- true
+		return
+	}
+
+	d.files[fileName] = true
+	d.mutex.Unlock()
+
+	var completed bool
+
+	defer func() {
+		d.mutex.Lock()
+		delete(d.files, fileName)
+		d.mutex.Unlock()
+
+		if !completed {
+			fmt.Println("Removing incomplete file", fileName)
+			os.Remove(path.Join(DownloadDir, fileName))
+		}
+	}()
+
+	filepath := path.Join(DownloadDir, fileName)
+
+	if _, err := os.Stat(filepath); err == nil {
+		fmt.Println("File exists. Skipping download.")
+		d.DoneChan <- false
+		return
+	}
+
+	output, err := os.Create(filepath)
+	if err != nil {
+		fmt.Println(err)
+		d.DoneChan <- false
+		return
+	}
+
+	defer output.Close()
+
+	response, err := http.Get(url)
+	if err != nil {
+		fmt.Println(err)
+		d.DoneChan <- false
+		return
+	}
+
+	defer response.Body.Close()
+
+	bar := progressbar.DefaultBytes(
+		response.ContentLength,
+	)
+
+	writer := io.MultiWriter(output, bar)
+
+	_, err = io.Copy(writer, response.Body)
+	if err != nil {
+		fmt.Printf("Error writing file: %s\n", err)
+		d.DoneChan <- false
+		return
+	}
+
+	completed = true
+
+	d.DoneChan <- true
 }

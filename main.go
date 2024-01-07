@@ -11,6 +11,7 @@ import (
 	"log"
 	"os"
 	"os/exec"
+	"path"
 	"strconv"
 	"strings"
 )
@@ -22,6 +23,8 @@ func main() {
 	}
 
 	programArgs := cmd.ParseArgs()
+
+	downloadQueue := downloader.InitDownloadQueue()
 
 	// Downloader should be handled by the library loading
 	// And all the stuff above for asking if the user wants to update the library
@@ -114,25 +117,39 @@ func main() {
 
 		displayName := indexedResult[selectorInt]
 
+		if programArgs.Download {
+			fmt.Printf("📥 Downloading %s\n", result[displayName])
+
+			go downloadQueue.DownloadedVideo(result[displayName])
+
+			select {
+			case progress := <-downloadQueue.ProgressChan:
+				fmt.Printf("Progress: %d bytes\n", progress)
+			case completed := <-downloadQueue.DoneChan:
+				if completed {
+					err = OpenFinder(downloader.DownloadDir)
+					if err != nil {
+						log.Fatalln(err)
+					}
+
+					continue
+				}
+			}
+
+			continue
+		}
+
 		fmt.Printf("🛋️  VLC startup with %s\n", result[displayName])
 
 		player.Play(result[displayName])
 	}
+}
 
-	return
-
-	var url string
-
-	cli := "/Applications/VLC.app/Contents/MacOS/VLC"
-	fmt.Printf("\nRun command %s %s\n", cli, url)
-
-	cmd := exec.Command(cli, url)
-	err = cmd.Start()
+func OpenFinder(subdirectory string) error {
+	cwd, err := os.Getwd()
 	if err != nil {
-		log.Fatalln(err)
+		return err
 	}
-	err = cmd.Wait()
-	if err != nil {
-		log.Fatalln(err)
-	}
+
+	return exec.Command("open", path.Join(cwd, subdirectory)).Run()
 }
