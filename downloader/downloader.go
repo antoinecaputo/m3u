@@ -201,6 +201,7 @@ func (d *DownloadQueue) DownloadedVideo(url string) {
 
 	if _, err := os.Stat(filepath); err == nil {
 		fmt.Println("File exists. Skipping download.")
+		completed = true
 		d.DoneChan <- false
 		return
 	}
