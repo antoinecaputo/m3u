@@ -23,6 +23,20 @@ const (
 	Category    Metadata = "category"
 )
 
+func Icon(playlist Playlist) string {
+	switch playlist {
+	case PlaylistTV:
+		return "📺"
+	case PlaylistSeries:
+		return "🍿"
+	case PlaylistMovies:
+		return "🎬"
+	case PlayListRadio:
+		return "📻"
+	}
+	return "??"
+}
+
 // Playlist TV : group-title = '{CHANNEL_NAME}'
 // Playlist Series :
 // group-title ='SERIES'
