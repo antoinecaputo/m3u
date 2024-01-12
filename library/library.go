@@ -15,8 +15,8 @@ type Library struct {
 	Radio  []Channel
 }
 
-func (lib *Library) MasterSearch(query string) map[string]string {
-	results := make(map[string]string)
+func (lib *Library) MasterSearch(query string) []*Channel {
+	var results []*Channel
 
 	playlists := []Playlist{PlaylistTV, PlaylistSeries, PlaylistMovies, PlayListRadio}
 
@@ -29,13 +29,9 @@ func (lib *Library) MasterSearch(query string) map[string]string {
 			continue
 		}
 
-		for displayName, url := range playlistResult {
-
-			displayNameWithPlaylist := fmt.Sprintf("%s (%s)", displayName, string(playlist))
-
-			results[displayNameWithPlaylist] = url
+		for _, channel := range playlistResult {
+			results = append(results, channel)
 		}
-
 	}
 
 	done := time.Now()
@@ -45,51 +41,58 @@ func (lib *Library) MasterSearch(query string) map[string]string {
 	return results
 }
 
-func (lib *Library) Search(playlist Playlist, query string) map[string]string {
-	results := make(map[string]string, 0)
-
-	var playlistPtr *[]Channel
-
-	switch playlist {
-	case PlaylistTV:
-		playlistPtr = &lib.TV
-	case PlaylistSeries:
-		playlistPtr = &lib.Series
-	case PlaylistMovies:
-		playlistPtr = &lib.Movies
-	case PlayListRadio:
-		playlistPtr = &lib.Radio
+func (lib *Library) Search(playlist Playlist, query string) []*Channel {
+	if query == "" {
+		return []*Channel{}
 	}
+
+	var results []*Channel
+
+	pointerToChannels := lib.getChannelsPointer(playlist)
 
 	queryStandardized := strings.ToLower(query)
 
-	for i := range *playlistPtr {
-		if playlist == PlaylistTV {
-			if strings.Contains(strings.ToLower(string((*playlistPtr)[i].Id)), queryStandardized) {
-				results[(*playlistPtr)[i].DisplayName] = (*playlistPtr)[i].Url
-			}
-
+	for i := range *pointerToChannels {
+		if !strings.Contains(strings.ToLower((*pointerToChannels)[i].String()), queryStandardized) {
 			continue
 		}
 
-		if strings.Contains(strings.ToLower((*playlistPtr)[i].DisplayName), queryStandardized) {
-			results[(*playlistPtr)[i].DisplayName] = (*playlistPtr)[i].Url
-		}
+		results = append(results, &(*pointerToChannels)[i])
 	}
 
 	return results
 }
 
 func (lib *Library) String() {
-	fmt.Println("   ******************************")
-	fmt.Printf("Playlist TV length: %d\n", len(lib.TV))
-	fmt.Printf("Playlist Movies length: %d\n", len(lib.Movies))
-	fmt.Printf("Playlist Series length: %d\n", len(lib.Series))
-	fmt.Printf("Playlist Radio length: %d\n", len(lib.Radio))
-	fmt.Println("   ******************************")
+	playlistsLength := len(lib.TV) + len(lib.Movies) + len(lib.Series) + len(lib.Radio)
+
+	fmt.Println("******************************")
+	fmt.Printf("Found %d channels from the library\n", playlistsLength)
+	fmt.Printf("%s TV: %d\n", Icon(PlaylistTV), len(lib.TV))
+	fmt.Printf("%s Movies: %d\n", Icon(PlaylistMovies), len(lib.Movies))
+	fmt.Printf("%s Series: %d\n", Icon(PlaylistSeries), len(lib.Series))
+	fmt.Printf("%s Radio: %d\n", Icon(PlayListRadio), len(lib.Radio))
+	fmt.Println("******************************")
+}
+
+func (lib *Library) getChannelsPointer(playlist Playlist) *[]Channel {
+	switch playlist {
+	case PlaylistTV:
+		return &lib.TV
+	case PlaylistSeries:
+		return &lib.Series
+	case PlaylistMovies:
+		return &lib.Movies
+	case PlayListRadio:
+		return &lib.Radio
+	}
+
+	return nil
 }
 
 func (lib *Library) Save() error {
+	// Save is disabled for now
+	return nil
 
 	err := writeJson(lib.TV, PlaylistTV)
 	if err != nil {

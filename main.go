@@ -6,6 +6,7 @@ import (
 	"github.com/joho/godotenv"
 	"iptvstudio/cmd"
 	"iptvstudio/downloader"
+	"iptvstudio/library"
 	"iptvstudio/parser"
 	"iptvstudio/player"
 	"log"
@@ -76,12 +77,8 @@ func main() {
 			continue
 		}
 
-		var indexedResult []string
-
-		for displayName, url := range result {
-			fmt.Printf("#%d : %s - %s\n", len(indexedResult), displayName, url)
-
-			indexedResult = append(indexedResult, displayName)
+		for i, channel := range result {
+			fmt.Printf("#%d : %s %s - %s\n", i, library.Icon(channel.Playlist), channel.String(), channel.Url)
 		}
 
 		fmt.Print("\n🍿 Select a match or press enter to search again:\n")
@@ -110,17 +107,17 @@ func main() {
 			continue
 		}
 
-		if selectorInt >= len(indexedResult) {
-			fmt.Printf("%s is not a valid number [0-%d]\n", selector, len(indexedResult)-1)
+		if selectorInt >= len(result) {
+			fmt.Printf("%s is not a valid number [0-%d]\n", selector, len(result)-1)
 			continue
 		}
 
-		displayName := indexedResult[selectorInt]
+		selectedChannel := (result)[selectorInt]
 
 		if programArgs.Download {
-			fmt.Printf("📥 Downloading %s\n", result[displayName])
+			fmt.Printf("📥 Downloading %s\n", selectedChannel.String())
 
-			go downloadQueue.DownloadedVideo(result[displayName])
+			go downloadQueue.DownloadedVideo(selectedChannel.Url)
 
 			select {
 			case progress := <-downloadQueue.ProgressChan:
@@ -139,9 +136,9 @@ func main() {
 			continue
 		}
 
-		fmt.Printf("🛋️  VLC startup with %s\n", result[displayName])
+		fmt.Printf("🛋️  VLC startup with %s\n", selectedChannel.Url)
 
-		player.Play(result[displayName])
+		player.Play(selectedChannel.Url)
 	}
 }
 
