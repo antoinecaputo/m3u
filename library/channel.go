@@ -14,6 +14,14 @@ type Channel struct {
 	Metadata map[Metadata]string
 }
 
+func (c *Channel) String() string {
+	if c.Playlist == PlaylistTV {
+		return string(c.Id)
+	}
+
+	return c.DisplayName
+}
+
 /*
 	TvgId        string `xml:"tvg-id,attr"`         // channel code from EPG code table
 	TvgName      string `xml:"tvg-name,attr"`       // channel name from EPG code table
