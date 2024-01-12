@@ -17,12 +17,12 @@ func LoadLibrary() (*library.Library, error) {
 		return nil, fmt.Errorf("error getting downloaded file path: %v", err)
 	}
 
+	fmt.Println("📄 Loading library...")
+
 	channels, err := ProcessFile(filePath)
 	if err != nil {
 		log.Fatalln(err)
 	}
-
-	fmt.Printf("Found %d channels from the library\n", len(channels))
 
 	playlistTv := make([]library.Channel, 0)
 	playlistMovies := make([]library.Channel, 0)
