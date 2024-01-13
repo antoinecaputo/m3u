@@ -47,6 +47,7 @@ func LoadLibrary() (*library.Library, error) {
 		Series: playlistSeries,
 		Movies: playlistMovies,
 		Radio:  playlistRadio,
+		Queue:  downloader.InitDownloadQueue(),
 	}, nil
 }
 

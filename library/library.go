@@ -3,6 +3,7 @@ package library
 import (
 	"encoding/json"
 	"fmt"
+	"iptvstudio/downloader"
 	"os"
 	"strings"
 	"time"
@@ -13,6 +14,7 @@ type Library struct {
 	Series []Channel
 	Movies []Channel
 	Radio  []Channel
+	Queue  *downloader.DownloadQueue
 }
 
 func (lib *Library) MasterSearch(query string) []*Channel {
