@@ -3,8 +3,9 @@ package cmd
 import "os"
 
 type ProgramArgs struct {
-	Download bool // `default:"false"`
-	Update   bool // `default:"false"`
+	Download  bool // `default:"false"`
+	Update    bool // `default:"false"`
+	WebServer bool // `default:"false"`
 }
 
 func factory() ProgramArgs {
@@ -28,6 +29,9 @@ func ParseArgs() ProgramArgs {
 
 func (p *ProgramArgs) parse(arg string) {
 	switch arg {
+	case "-w", "--webserver":
+		p.WebServer = true
+		break
 	case "-d", "--download":
 		p.Download = true
 	case "-u", "--update":

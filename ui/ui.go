@@ -1,22 +1,18 @@
 package ui
 
 import (
-	"fyne.io/fyne/v2/app"
-	"fyne.io/fyne/v2/container"
-	"fyne.io/fyne/v2/widget"
+	"fmt"
+	"net/http"
 )
 
-func render() {
-	a := app.New()
-	w := a.NewWindow("Hello")
+func Server() error {
+	http.HandleFunc("/", handler)
 
-	hello := widget.NewLabel("Hello Fyne!")
-	w.SetContent(container.NewVBox(
-		hello,
-		widget.NewButton("Hi!", func() {
-			hello.SetText("Welcome :)")
-		}),
-	))
+	fmt.Println("🌐 Starting web server on http://localhost:8080")
 
-	w.ShowAndRun()
+	return http.ListenAndServe(":8080", nil)
+}
+
+func handler(w http.ResponseWriter, r *http.Request) {
+	w.Write([]byte("Hello, World!"))
 }
