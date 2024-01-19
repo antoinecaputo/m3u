@@ -19,6 +19,8 @@ func Server(lib *library.Library) error {
 		http.Error(w, "404 Not Found", http.StatusNotFound)
 	})
 
+	http.Handle("/", http.FileServer(http.Dir("./static")))
+
 	fmt.Println("🌐 Starting web server on http://localhost:8080/home")
 
 	return http.ListenAndServe(":8080", nil)

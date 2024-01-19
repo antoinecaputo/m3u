@@ -7,7 +7,7 @@ import (
 )
 
 func homeHandler(w http.ResponseWriter, r *http.Request, lib *library.Library) {
-	tpl := template.Must(template.ParseFiles("templates/index.gohtml"))
+	tpl := template.Must(template.ParseFiles("static/index.gohtml"))
 
 	err := tpl.Execute(w, nil)
 	if err != nil {
