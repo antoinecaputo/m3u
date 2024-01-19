@@ -38,7 +38,7 @@ func (lib *Library) MasterSearch(query string) []*Channel {
 
 	done := time.Now()
 
-	fmt.Printf("🎬 %d matches found in %v\n", len(results), done.Sub(now))
+	fmt.Printf("🎬 %d matches found in %v - %s\n", len(results), done.Sub(now), query)
 
 	return results
 }
@@ -51,6 +51,9 @@ func (lib *Library) Search(playlist Playlist, query string) []*Channel {
 	var results []*Channel
 
 	pointerToChannels := lib.getChannelsPointer(playlist)
+	if pointerToChannels == nil {
+		return results
+	}
 
 	queryStandardized := strings.ToLower(query)
 
