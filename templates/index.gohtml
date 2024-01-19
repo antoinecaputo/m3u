@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Channel Search</title>
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <script>
+        function search() {
+            const limit = Number($("#result-count").val());
+            console.log('limit', limit);
+
+            const filter = $("#filter").val();
+            console.log('filter', filter.toString());
+
+            const query = $("#query").val();
+            console.log('query', query.toString());
+
+            const url = `/search?limit=${limit}&filter=${filter}&query=${query}`;
+
+            console.log(url);
+
+            if (query.length >= 3) {
+                $.get(url, function(data) {
+                    $("#search-results").html(data);
+                });
+            } else {
+                $("#search-results").empty();
+            }
+        }
+
+        $(document).ready(function() {
+            $("#query").on("input", search);
+            $("#filter").on("change", search);
+            $("#result-count").on("change", search);
+        });
+    </script>
+</head>
+<body>
+<h1>Channel Search</h1>
+<div>
+    <label for="filter">Filter:</label>
+    <select id="filter" name="filter">
+        <option value="">ALL</option>
+        <option value="TV">TV</option>
+        <option value="SERIES">SERIES</option>
+        <option value="MOVIES">MOVIES</option>
+        <option value="RADIO">RADIO</option>
+    </select>
+</div>
+<div>
+    <label for="result-count">Result Count:</label>
+    <input type="number" id="result-count" name="result-count" value="15" min="1" max="1000">
+</div>
+<label for="query">Search:</label>
+<input type="text" id="query" name="query" required>
+<div id="search-results"></div>
+</body>
+</html>

@@ -6,7 +6,7 @@ import (
 	"iptvstudio/cmd"
 	"iptvstudio/downloader"
 	"iptvstudio/parser"
-	"iptvstudio/ui"
+	"iptvstudio/web"
 	"log"
 )
 
@@ -33,7 +33,7 @@ func main() {
 	}
 
 	if programArgs.WebServer {
-		err = ui.Server()
+		err = web.Server(lib)
 		if err != nil {
 			log.Fatalln(err)
 		}
