@@ -15,9 +15,7 @@ func Server(lib *library.Library) error {
 		searchHandler(w, r, lib)
 	})
 
-	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		http.Error(w, "404 Not Found", http.StatusNotFound)
-	})
+	http.HandleFunc("/image-not-found/", imageNotFoundHandler)
 
 	http.Handle("/", http.FileServer(http.Dir("./static")))
 

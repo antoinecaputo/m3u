@@ -68,7 +68,8 @@ func searchResultHTML(channel *library.Channel) string {
 		<div class="channel mb-4">
     		<div class="flex flex-col items-center justify-center">
 				<div class="channel__logo">
-					<img class="h-32" src="` + string(channel.Logo) + `" alt="` + string(channel.Name) + `">
+					<img class="h-32" src="` + string(channel.Logo) + `" alt="` + string(channel.Name) + `"
+   						onerror="this.onerror=null;this.src='/image-not-found';">
 				</div>
 
 				<div class="channel__name">` + string(channel.Name) + `</div>
