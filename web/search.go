@@ -81,7 +81,7 @@ func searchResultHTML(channel *library.Channel) string {
 
 				<div class="channel__group">` + string(channel.Group) + `</div>
 
-				<div class="mb-4 flex items-center space-x-2">` + actions + `</div>			
+				<div class="mb-4 flex items-center space-x-2 py-2">` + actions + `</div>			
 			</div>
 		</div>
 	`
