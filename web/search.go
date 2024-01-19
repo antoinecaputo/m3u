@@ -1,6 +1,7 @@
 package web
 
 import (
+	"fmt"
 	"iptvstudio/library"
 	"net/http"
 	"strconv"
@@ -40,17 +41,21 @@ func searchHandler(w http.ResponseWriter, r *http.Request, lib *library.Library)
 }
 
 func searchResultHTML(channel *library.Channel) string {
-	return string(`
+
+	playerLink := fmt.Sprintf("rtsp://%s", channel.Url)
+
+	return `
 		<div class="channel">
-			<div class="channel__logo">
-				<img src="` + channel.Logo + `" alt="` + channel.Name + `">
-			</div>
-			<div class="channel__name">
-				` + channel.Name + `
-			</div>
-			<div class="channel__group">
-				` + channel.Group + `
+			<div style="flex-direction: column; display: flex; justify-content: center; align-items: center;">
+				<div class="channel__logo" onclick="window.location.href='` + playerLink + `'">
+					<img src="` + string(channel.Logo) + `" alt="` + string(channel.Name) + `">
+				</div>
+				<div class="channel__name">` + string(channel.Name) + `</div>
+				<div class="channel__group">` + string(channel.Group) + `</div>
+				<div class="channel__download">
+					<li><a href="` + string(channel.Logo) + `" download>Download</a></li>
+				</div>
 			</div>
 		</div>
-	`)
+	`
 }
