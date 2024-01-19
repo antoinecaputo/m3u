@@ -45,24 +45,29 @@ func searchResultHTML(channel *library.Channel) string {
 
 	// openVLC := `window.open("` + player.PlayCommand(channel.Url) + `")`
 
-	download := `window.open("` + channel.Url + `")`
-
-	actions := `
+	playAction := `
 		<button
 			class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
 			onclick="` + "" + `">
 				<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
 					<path stroke-linecap="round" stroke-linejoin="round" d="M5.25 5.653c0-.856.917-1.398 1.667-.986l11.54 6.347a1.125 1.125 0 0 1 0 1.972l-11.54 6.347a1.125 1.125 0 0 1-1.667-.986V5.653Z" />
 				</svg>
-		</button>
+		</button>`
 
+	downloadAction := `
 		<button
 			class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-			onclick="` + download + `">
+			onclick="window.open('` + channel.Url + `')">
 				<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
 					<path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3" />
 				</svg>
 		</button>`
+
+	actions := playAction
+
+	if channel.Playlist == library.PlaylistMovies || channel.Playlist == library.PlaylistSeries {
+		actions += downloadAction
+	}
 
 	return `
 		<div class="channel mb-4">
