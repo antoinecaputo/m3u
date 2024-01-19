@@ -2,8 +2,12 @@ package player
 
 import "os/exec"
 
+func OpenPlayerCommand() string {
+	return "/Applications/VLC.app/Contents/MacOS/VLC"
+}
+
 func Play(url string) {
-	openVLC := "/Applications/VLC.app/Contents/MacOS/VLC"
+	openVLC := OpenPlayerCommand()
 
 	cmd := exec.Command(openVLC, url, "--fullscreen")
 	err := cmd.Start()
