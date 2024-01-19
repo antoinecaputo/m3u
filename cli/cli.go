@@ -15,10 +15,7 @@ import (
 	"strings"
 )
 
-func Run(
-	lib *library.Library,
-	programArgs *cmd.ProgramArgs) {
-
+func Run(lib *library.Library, programArgs *cmd.ProgramArgs) {
 	// Should probably be handled by the library too
 	// Save automatically when updating the library
 	if programArgs.Update {
