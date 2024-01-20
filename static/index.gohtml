@@ -24,9 +24,37 @@
 
 <h1 class="text-4xl font-bold mb-4">Channel Search</h1>
 
+<div id="toast-container" class="absolute top-0 start-1/2 -translate-x-1/2 pt-4 transition-opacity duration-500 hidden">
+    <div class="max-w-xs bg-white border border-gray-200 rounded-xl shadow-lg dark:bg-gray-800 dark:border-gray-700" role="alert">
+        <div class="flex p-4 space-x-2 justify-center items-center">
+            <div id="toast-success" class="flex-shrink-1 hidden">
+                <svg class="flex-shrink-0 h-4 w-4 text-teal-500 mt-0.5" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="green" viewBox="0 0 16 16">
+                    <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"/>
+                </svg>
+            </div>
+            <div id="toast-error" class="flex-shrink-1 hidden">
+                <svg class="flex-shrink-0 h-4 w-4 text-red-500 mt-0.5" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                    <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM5.354 4.646a.5.5 0 1 0-.708.708L7.293 8l-2.647 2.646a.5.5 0 0 0 .708.708L8 8.707l2.646 2.647a.5.5 0 0 0 .708-.708L8.707 8l2.647-2.646a.5.5 0 0 0-.708-.708L8 7.293 5.354 4.646z"/>
+                </svg>
+            </div>
+            <div class="ms-3">
+                <p id="toast-message" class="text-sm text-gray-700 dark:text-gray-400">
+                    This is a success message.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<button id="load" class="hover:bg-gray-200 p-2 rounded" onclick="load()">
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99" />
+    </svg>
+</button>
+
 <div class="mb-4">
     <label for="result-count" class="mr-2">Result Count:</label>
-    <input type="number" id="result-count" name="result-count" value="15" min="1" max="1000" class="p-2 border rounded">
+    <input type="number" id="result-count" name="result-count" value="100" min="1" max="1000" class="p-2 border rounded">
 </div>
 
 <div class="mb-4 flex items-center space-x-2">
@@ -43,7 +71,6 @@
     </button>
 </div>
 
-    <!-- Playlist Radio button group (MOVIES,SERIES,TV,RADIO) -->
 <div id="playlist-selector" class="mb-4 flex items-center space-x-2">
     <button id="playlist-all" class="bg-gray-200 hover:bg-blue-200 px-6 py-2 rounded bg-blue-200">
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
