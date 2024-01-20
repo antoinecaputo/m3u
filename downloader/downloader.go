@@ -16,16 +16,26 @@ const DownloadDir = "downloads"
 
 func Download(update bool) (string, error) {
 
+	server := os.Getenv("SERVER")
+
+	output := os.Getenv("OUTPUT")
+
+	extension := os.Getenv("TYPE")
+
+	filename, err := getFileName(server, output, extension)
+	if err != nil {
+		return "", err
+	}
+
 	if !update {
-		if isDownloadedFileExists() {
-			return GetDownloadedFilePath()
+		if isDownloadedFileExists(filename) {
+			return filename, nil
 		}
 
 		fmt.Println("File not found. Downloading...")
 	}
 
 	protocol := os.Getenv("PROTOCOL")
-	server := os.Getenv("SERVER")
 
 	req, err := http.NewRequest("GET", fmt.Sprintf("%s://%s/get.php", protocol, server), nil)
 	if err != nil {
@@ -89,7 +99,7 @@ func Download(update bool) (string, error) {
 
 	os.MkdirAll(path.Join(cwd, DownloadDir), 0755)
 
-	filePath, err := GetDownloadedFilePath()
+	filePath, err := GetDownloadedFilePath(filename)
 	if err != nil {
 		return "", err
 	}
@@ -109,11 +119,13 @@ func Download(update bool) (string, error) {
 	return filePath, nil
 }
 
-func GetDownloadedFilePath() (string, error) {
-	filename, err := getDownloadedFileName()
-	if err != nil {
-		return "", err
-	}
+func GetDownloadedFilePath(filename string) (string, error) {
+	/*
+		filename, err := getDownloadedFileName()
+		if err != nil {
+			return "", err
+		}
+	*/
 
 	cwd, err := os.Getwd()
 	if err != nil {
@@ -123,22 +135,21 @@ func GetDownloadedFilePath() (string, error) {
 	return path.Join(cwd, DownloadDir, filename), nil
 }
 
-func getDownloadedFileName() (string, error) {
-	server := os.Getenv("SERVER")
-
-	output := os.Getenv("OUTPUT")
-
-	extension := os.Getenv("TYPE")
-
+func getFileName(server string, output string, extension string) (string, error) {
 	if server == "" || extension == "" {
 		return "", fmt.Errorf("server or extension is empty")
 	}
 
-	return fmt.Sprintf("%s.%s.%s", server, output, extension), nil
+	// Add separator if output is not empty
+	if output != "" {
+		output = "." + output
+	}
+
+	return fmt.Sprintf("%s%s.%s", server, output, extension), nil
 }
 
-func isDownloadedFileExists() bool {
-	filePath, err := GetDownloadedFilePath()
+func isDownloadedFileExists(filename string) bool {
+	filePath, err := GetDownloadedFilePath(filename)
 	if err != nil {
 		return false
 	}

@@ -11,8 +11,8 @@ import (
 	"strings"
 )
 
-func LoadLibrary() (*library.Library, error) {
-	filePath, err := downloader.GetDownloadedFilePath()
+func LoadLibrary(filename string) (*library.Library, error) {
+	filePath, err := downloader.GetDownloadedFilePath(filename)
 	if err != nil {
 		return nil, fmt.Errorf("error getting downloaded file path: %v", err)
 	}

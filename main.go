@@ -18,19 +18,19 @@ func main() {
 
 	programArgs := cmd.ParseArgs()
 
-	lib, err := parser.LoadLibrary()
+	// Downloader should be handled by the library loading
+	// And all the stuff above for asking if the user wants to update the library
+	filename, err := downloader.Download(programArgs.Update)
+	if err != nil {
+		log.Fatalln(err)
+	}
+
+	lib, err := parser.LoadLibrary(filename)
 	if err != nil {
 		log.Fatalln(err)
 	}
 
 	lib.String()
-
-	// Downloader should be handled by the library loading
-	// And all the stuff above for asking if the user wants to update the library
-	_, err = downloader.Download(programArgs.Update)
-	if err != nil {
-		log.Fatalln(err)
-	}
 
 	if programArgs.WebServer {
 		err = web.Server(lib)
