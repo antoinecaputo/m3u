@@ -1,0 +1,21 @@
+doctype html
+html
+    head
+        title VOD Categories
+        link(rel='stylesheet', href='https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css')
+    body
+        .container
+            h1 VOD Categories
+            .row
+              each category in categories
+                  .col-md-4
+                      .card.mb-4
+                          .card-body
+                              h5.card-title= category.category_name
+                              p.card-text
+                                  | Category ID: #{category.category_id}
+                                  br
+                                  | Parent ID: #{category.parent_id}
+                                  if category.ignored
+                                      br
+                                      | Ignored: Yes
