@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"iptvstudio/downloader"
+	"iptvstudio/server"
 	"os"
 	"strings"
 	"time"
@@ -14,6 +15,7 @@ type Library struct {
 	Series []Channel
 	Movies []Channel
 	Radio  []Channel
+	Server server.Server
 	Queue  *downloader.DownloadQueue
 }
 
