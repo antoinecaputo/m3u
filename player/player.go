@@ -1,9 +1,18 @@
 package player
 
-import "os/exec"
+import (
+	"fmt"
+	"os/exec"
+)
 
 func OpenPlayerCommand() string {
 	return "/Applications/VLC.app/Contents/MacOS/VLC"
+}
+
+func PlayCommand(url string) string {
+	openVLC := OpenPlayerCommand()
+
+	return fmt.Sprintf("%s %s --fullscreen", openVLC, url)
 }
 
 func Play(url string) {
