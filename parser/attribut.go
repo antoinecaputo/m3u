@@ -1,5 +1,7 @@
 package parser
 
+import "fmt"
+
 type Attribut string
 
 const (
@@ -13,3 +15,7 @@ const (
 	Timeshift    Attribut = "timeshift"
 	TvgRec       Attribut = "tvg-rec"
 )
+
+func (a Attribut) String(value string) string {
+	return fmt.Sprintf("%s=\"%s\"", a, value)
+}
